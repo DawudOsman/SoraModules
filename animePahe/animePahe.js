@@ -224,7 +224,7 @@ async function extractStreamUrl(url) {
         return "https://proxy.vumeto.com/fetch?url="+hlsLink
 
     }))
-
+      return hlsUrl[0]
     
       return JSON.stringify({streams:hlsUrl,subtitles:""});
     //const newStreamUrl = streamUrl.replace('.mp4', '.m3u8')
