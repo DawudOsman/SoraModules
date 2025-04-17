@@ -1,0 +1,17 @@
+{
+    "sourceName": "AnimePahe",
+    "iconUrl": "https://i1.sndcdn.com/artworks-yDS70wCS1Ukyy4pL-mztoDg-t500x500.jpg",
+    "author": {
+        "name": "Churly",
+        "icon": "https://i.pinimg.com/236x/90/2c/ea/902ceaa5610ef7f8f81c2f3881799f2c.jpg"
+    },
+    "version": "1.0.0",
+    "language": "English (SUB)",
+    "streamType": "HLS",
+    "quality": "720p",
+    "baseUrl": "https://kwik.si/",
+    "searchBaseUrl": "https://www.animepahe.ru/api?m=search&q=%s",
+    "scriptUrl": "https://raw.githubusercontent.com/Ylruhc/AnimePaheModule/refs/heads/main/AnimePahe.js",
+    "asyncJS": true,
+    "streamAsyncJS": true
+ }
