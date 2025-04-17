@@ -224,6 +224,9 @@ async function extractStreamUrl(url) {
         return "https://proxy.vumeto.com/fetch?url="+hlsLink
 
     }))
+    console.error("Stream urls are")
+      console.error(hlsUrl)
+    
       return {streams:hlsUrl,subtitles:""};
     //const newStreamUrl = streamUrl.replace('.mp4', '.m3u8')
     //return newStreamUrl
