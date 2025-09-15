@@ -13,5 +13,8 @@
     "searchBaseUrl": "https://www.animepahe.ru/api?m=search&q=%s",
     "scriptUrl": "https://raw.githubusercontent.com/DawudOsman/SoraModules/refs/heads/main/animePahe/animePahe.js",
     "asyncJS": true,
-    "streamAsyncJS": true
+    "streamAsyncJS": true,
+    "downloadSupport": true,
+    "type": "anime"
  }
+
