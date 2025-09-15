@@ -609,7 +609,7 @@ async function getHLSPaheLink(url)
 {
 // Regex to capture both data-src and button inner text
 const parentDivRegex = /<div[^>]*id="resolutionMenu"[^>]*>([\s\S]*?)<\/div>/;
-const childRegex = /<button[^>]*data-src="([^"]+)"[^>]*>(.*?)<\/button>/g;
+const childRegex = /<button[^>]*data-src="([^"]+)"[^>]*data-fansub="([^"]+)"[^>]*data-resolution="([^"]+)"[^>]*>/g
 
 const ddosInterceptor = new DdosGuardInterceptor();
 const r = await ddosInterceptor.fetchWithBypass(url);
@@ -623,7 +623,7 @@ const childMatch = [...parentMatch.matchAll(childRegex)];
 
 const results = childMatch.map(x => ({
   src: x[1],
-  text: decodeHtmlEntities(x[2].trim()) // inner text of button
+  text: `${x[2]} - ${x[3]}p`  // inner text of button
 }));
 
 console.log(results);
@@ -662,4 +662,5 @@ async function getHLSLink(videoUrl)
 /** 
 * Tests
 **/
+
 
