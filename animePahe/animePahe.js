@@ -99,8 +99,8 @@ class DdosGuardInterceptor {
 
 
 // TEMPLATE TODO - Fill in the following variables
-const BASE_URL = 'https://www.animepahe.ru';
-const SEARCH_URL = 'https://www.animepahe.ru/api';
+const BASE_URL = 'https://www.animepahe.si';
+const SEARCH_URL = 'https://www.animepahe.si/api';
 const userAgents = [
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Version/16.0 Safari/537.36",
@@ -204,30 +204,37 @@ async function extractStreamUrl(url) {
       // Or if you're lucky and the site has an API return JSON use that instead
      // console.error("WEB EPISODE URL IS")
       //console.error(url)
-      //const paheWinLink = await getPaheWinLink(url);
+      const paheWinLink = await getPaheWinLink(url);
      // console.error("PAHE URL IS")
       //console.error(paheWinLink)
       //const redirectUrl = await getRedirectUrl(paheWinLink+"/i");
      // console.error("REDIRECT URL IS")
       //console.error(redirectUrl)
       //const streamUrl = await fetchDownloadLink(redirectUrl)
+
       // const html = typeof response === 'object' ? await response.text() : await response; // Website response (Pick only one, both will give an error)
       // const data = typeof response === 'object' ? await response.json() : await JSON.parse(response); // API response (Pick only one, both will give an error)
       //console.error("STREAM URL IS")
       //console.error(streamUrl)
-    const hlsPaheLink = await getHLSPaheLink(url);
+const hlsPaheLinks = await getHLSPaheLink(url);
+console.log(hlsPaheLinks)
+var videosArr = [];
+
+    for (const val of hlsPaheLinks)
+        {
+                console.log("object is ")
+                console.log(val)
+                const midUrl = await getHLSLink(val["src"])
+                const streamUrl =  midUrl.replace('/stream/', '/hls/').replace('uwu.m3u8', 'owo.m3u8')
+                videosArr.push({streamUrl:streamUrl,headers:{Referer:"kwik.cz",Origin:"kwik.cz"},title:val["text"]})
+        }
     //console.error("HLS PAHE LINK IS")
      //console.error(hlsPaheLink)
-    const hlsUrl = await Promise.all(hlsPaheLink.map(async x=>{
-            
-        const hlsLink = await getHLSLink(x)
-        return "https://proxy.vumeto.com/fetch?url="+hlsLink
 
-    }))
-      return hlsUrl[0]
-    
-      return JSON.stringify({streams:hlsUrl,subtitles:""});
-    //const newStreamUrl = streamUrl.replace('.mp4', '.m3u8')
+   
+          return JSON.stringify({streams: videosArr})
+      //return hlsUrl;
+      //const newStreamUrl = streamUrl.replace('.mp4', '.m3u8')
     //return newStreamUrl
     
 
@@ -409,6 +416,20 @@ function unpack(source) {
 * Util Functions
 **/
 // decrypt functions that I dont know how it works but works
+
+function decodeHtmlEntities(str) {
+  const entities = {
+    "&middot;": "·",
+    "&amp;": "&",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&quot;": '"',
+    "&#39;": "'"
+  };
+
+  return str.replace(/&[a-zA-Z0-9#]+;/g, match => entities[match] || match);
+}
+
 function getString(content, s1, s2) {
   let slice2 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/".slice(0, s2);
   let acc = 0;
@@ -586,15 +607,27 @@ function extract_text_from_html(html_content,pattern)
 //HLS FUNC
 async function getHLSPaheLink(url)
 {
-    parentDivRegex = /<div[^>]*id="resolutionMenu"[^>]*>([\s\S]*?)<\/div>/
-    childRegex = /data-src="([^"]+)"/g
-    const ddosInterceptor = new DdosGuardInterceptor();
-    const r = await ddosInterceptor.fetchWithBypass(url);
+// Regex to capture both data-src and button inner text
+const parentDivRegex = /<div[^>]*id="resolutionMenu"[^>]*>([\s\S]*?)<\/div>/;
+const childRegex = /<button[^>]*data-src="([^"]+)"[^>]*>(.*?)<\/button>/g;
 
-    const text = await r.text()
-    const parentMatch = text.match(parentDivRegex)[1]
-    const childMatch = [...parentMatch.matchAll(childRegex)];
-    return childMatch.map(x=>x[1])
+const ddosInterceptor = new DdosGuardInterceptor();
+const r = await ddosInterceptor.fetchWithBypass(url);
+const text = await r.text();
+
+// Get the resolutionMenu block
+const parentMatch = text.match(parentDivRegex)[1];
+
+// Extract all matches of (data-src, innerText)
+const childMatch = [...parentMatch.matchAll(childRegex)];
+
+const results = childMatch.map(x => ({
+  src: x[1],
+  text: decodeHtmlEntities(x[2].trim()) // inner text of button
+}));
+
+console.log(results);
+return results;
 }
 
 async function getHLSLink(videoUrl)
@@ -629,3 +662,4 @@ async function getHLSLink(videoUrl)
 /** 
 * Tests
 **/
+
